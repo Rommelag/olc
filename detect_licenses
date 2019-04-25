@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+"""OLC start script"""
+import argparse
+import json
+import subprocess
+import olc
+
+
+def startup():
+    """ Script startup code"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument('component', help='Name of software component')
+    args = parser.parse_args()
+    collector = olc.LicenseCollector(args.component)
+    licenses = []
+    if subprocess.call(['which', 'apt']) == 0:
+        licenses.append(collector.get_licenses_debian())
+    if subprocess.call(['which', 'apk']) == 0:
+        licenses.append(collector.get_licenses_alpine())
+    with open('licenses.json', 'w') as file:
+        json.dump(licenses, file)
+
+
+if __name__ == "__main__":
+    startup()
