@@ -1,1 +1,3 @@
 language: python
+install:
+  - echo "No dependencies"
