@@ -1,3 +1,5 @@
 language: python
 install:
   - echo "No dependencies"
+script:
+  - echo "No tests"
