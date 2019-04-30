@@ -12,7 +12,8 @@ def startup():
     parser.add_argument('component', help='Name of software component')
     args = parser.parse_args()
     collector = olc.LicenseCollector(args.component)
-    licenses = []
+    # No need to check if python is availabe (we are running python after all)
+    licenses = [collector.get_licenses_python()]
     if subprocess.call(['which', 'apt']) == 0:
         licenses.append(collector.get_licenses_debian())
     if subprocess.call(['which', 'apk']) == 0:

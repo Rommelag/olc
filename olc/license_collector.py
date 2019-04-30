@@ -2,6 +2,7 @@
 """Detect Open Source Licenses in multiple eco systems (i.e. operating systems, programming languages)"""
 import os
 import subprocess
+import olc.utils
 
 
 class LicenseCollector():
@@ -50,11 +51,25 @@ class LicenseCollector():
 
     def get_licenses_python(self):
         """Python"""
-        pass
         # Looks like this isn't so easy - you can read "License" from 'PKG-INFO' or rip off
         # https://github.com/raimon49/pip-licenses/blob/master/piplicenses.py
         # But the license texts themselves aren't always part of the python package,
         # and License name is not SPDX compatible (e.g 'GPL', 'LGPL')
+        print('Collecting Python licenses..')
+        licenses = {
+            'component': self.component_name,
+            'eco-system': 'python',
+            'licenses': []
+        }
+        try:
+            from pip import get_installed_distributions
+        except:
+            from pip._internal.utils.misc import get_installed_distributions
+
+        for _, package in sorted([('%s %s' % (i.location, i.key), i) for i in get_installed_distributions()]):
+            license_names = olc.utils.get_pkg_licenses(package.key)
+            licenses['licenses'].append({'name': package.key, 'license_names': license_names})
+        return licenses
 
     def get_licenses_node(self):
         """ Javacript """
