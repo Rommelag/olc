@@ -10,3 +10,8 @@ Currently supported platforms:
 Planned:
 * Node
 
+## Usage
+```
+pip3 install olc
+detect_licenses $PROJECTNAME
+```
