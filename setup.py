@@ -11,7 +11,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 setup(
     name="olc",
     # PEP-440 compatible version
-    version="0.0.3",
+    version="0.0.4",
     url="https://github.com/rommelag/olc",
     author="Rommelag iLabs",
     description=("Basic Open Source License Collector"),
