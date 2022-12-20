@@ -1,6 +1,7 @@
 # pylint: disable=line-too-long
 """Detect Open Source Licenses in multiple eco systems (i.e. operating systems, programming languages)"""
 import os
+import sys
 import subprocess
 import olc.utils
 
@@ -61,14 +62,40 @@ class LicenseCollector():
             'eco-system': 'python',
             'licenses': []
         }
+
         try:
+            licenses['licenses']=self._get_licenses_python_importlib()
+        except:
+            licenses['licenses']=self._get_licenses_python_pip()
+        return licenses
+
+    def _get_licenses_python_importlib(self):
+        licenses = []
+        if sys.version_info >= (3, 8):
+            print("Detected Python version >= 3.8, using importlib.metadata..")
+            from importlib import metadata as importlib_metadata
+        else:
+            print("Detected Python version older than 3.8, checking if importlib_metadata backport is available")
+            import importlib_metadata
+
+        dists = importlib_metadata.distributions()
+        for dist in dists:
+            pkg_name = dist.metadata["Name"]
+            licenses.append({'name': pkg_name, 'license_names':  olc.utils.get_pkg_licenses(pkg_name)})
+        return licenses
+
+    def _get_licenses_python_pip(self):
+        licenses = []
+        try:
+            print("Trying older-version logic #1")
             from pip import get_installed_distributions
         except:
+            print("Trying older-version logic #2")
             from pip._internal.utils.misc import get_installed_distributions
 
         for _, package in sorted([('%s %s' % (i.location, i.key), i) for i in get_installed_distributions()]):
             license_names = olc.utils.get_pkg_licenses(package.key)
-            licenses['licenses'].append({'name': package.key, 'license_names': license_names})
+            licenses.append({'name': package.key, 'license_names': license_names})
         return licenses
 
     def get_licenses_node(self):
